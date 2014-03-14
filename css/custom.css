@@ -1,0 +1,57 @@
+html body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: #FAFAFA;
+}
+
+header {
+  width: 100%;
+  height: 100px;
+  text-align: center;
+  background: white;
+  top: 0;
+  position: fixed;
+}
+
+nav {
+  width: 100%;
+  max-width: 80%;
+  height: 100%;
+  margin-top: 110px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+}
+
+.container {
+  margin-top: 3%;
+}
+
+.form-control {
+  max-width: 300px;
+}
+
+#planning {
+  background: #EFECCA;
+}
+
+#planning th { 
+  text-align: center;
+  width: 150px;
+  height: 20px;
+}
+
+#planning td {
+  width: 150px;
+  height: 100px;
+}
+
+footer {
+  background: white;
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  text-align: center;
+}
