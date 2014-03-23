@@ -1,7 +1,7 @@
 <?php
 session_start();
 $PARAM_hote = 'localhost';
-$PARAM_nom_bd = 'freebug';
+$PARAM_nom_bd = 'gsbp2';
 $PARAM_utilisateur = 'root';
 $PARAM_mot_passe = '';
 
@@ -22,7 +22,7 @@ catch(Exception $e)
 
 //$connexion = new PDO('mysql:host='.$PARAM_hote.';dbname='.$PARAM_nom_bd, $PARAM_utilisateur, $PARAM_mot_passe);
 
-$resultat = $connexion->query("SELECT email, password FROM users WHERE email='".$email."'");
+$resultat = $connexion->query("SELECT email, password FROM user WHERE email='".$email."'");
 $resultat->setFetchMode(PDO::FETCH_OBJ);
 
 $ligne = $resultat->fetch();

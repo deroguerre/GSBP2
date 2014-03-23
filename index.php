@@ -1,3 +1,6 @@
+<?php
+  session_start();
+?>
 <!DOCTYPE html>
 <html lang="fr">
   <head>
@@ -22,25 +25,28 @@
       <?php include('templates/header.html'); ?>
     </header>
     
-    <nav>
-      <?php include('templates/nav.html'); ?>
-    </nav>
-    
     <div class="container">
+      <p><h3>Bienvenue !</h3></p>
       <p>
-        <form method="post" action="connexion.php" role="form">
-          <div class="form-group">
-            <label for="email">Adresse email</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="Email">
-          </div>
-          <div class="form-group">
-            <label for="exampleInputPassword1">Mot de passe</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Mot de passe">
-          </div>
-          <button type="submit" class="btn btn-default">Connexion</button>
-        </form>
+        <?php 
+          if(!isset($_SESSION['email'], $_SESSION['password']))
+          {
+            echo "<form method='post' action='connexion.php' role='form'>
+              <div class='form-group'>
+                <label for='email'>Adresse email</label>
+                <input type='email' class='form-control' id='email' name='email' placeholder='Email'>
+              </div>
+              <div class='form-group'>
+                <label for='exampleInputPassword1'>Mot de passe</label>
+                <input type='password' class='form-control' id='password' name='password' placeholder='Mot de passe'>
+              </div>
+              <button type='submit' class='btn btn-default'>Connexion</button>
+            </form>";
+          }
+        ?>
       </p>
       <p>
+        
       </p>
     </div>
     
