@@ -12,8 +12,10 @@ header {
   max-height:110px;
   text-align: center;
   background: white;
+  margin-top: 0;
+  padding-top: 0;
   top: 0;
-  position: fixed;
+  position: absolute;
   z-index: 10;
 }
 
@@ -34,34 +36,19 @@ header {
 }*/
 
 .container {
-  margin-top: 120px;
+  position: absolute;
 }
 
 .form-control {
   max-width: 300px;
 }
 
-#planning {
-  background: #EFECCA;
-}
-
-#planning th { 
-  text-align: center;
-  width: 150px;
-  height: 20px;
-}
-
-#planning td {
-  width: 150px;
-  height: 100px;
-}
-
 footer {
   background: white;
-  position: fixed;
+  position: relative;
+  clear:both;
+  margin-top: -150px;
   text-align: center;
   width: 100%;
-  bottom: 0;
   border-top: 1px solid #dddddd;
-  z-index: 9;
 }

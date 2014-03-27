@@ -40,6 +40,8 @@
         
           editable: true,
           
+
+          
           events: "json-events.php",
           
           eventDrop: function(event, delta) {
