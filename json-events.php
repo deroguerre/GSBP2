@@ -1,6 +1,6 @@
 <?php
 
-  include('event.class.php');
+  include('class/event.class.php');
   $Evenements = new CEvents(); 
   echo json_encode($Evenements->EventsToCalendar());
   

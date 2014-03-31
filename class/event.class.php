@@ -1,50 +1,43 @@
 <?php
-class Events
+class CEvents
 {
   //Attributs évènement
-  private $_id;
-  private $_title;
-  private $_start;
-  private $_end;
-  
-  private $_listEvents = array();
+  private $id;
+  private $title;
+  private $start;
+  private $end;
+ 
+  public $listEvents = array();
   
   public function getId(){
-    return $this->_id;
+    return $this->id;
   } 
   public function setId($id){
-    $this->_id = $id;
+    $this->id = $id;
   }
   
   public function getTitle(){
-    return $this->_title;
+    return $this->title;
   }
   public function setTitle($title){
-    $this->_title = $title;
+    $this->title = $title;
   }
   
   public function getStart(){
-    return $this->_start;
+    return $this->start;
   }
   public function setStart($start){
-    $this->_start = $start;
+    $this->start = $start;
   }
   
   public function getEnd(){
-    return $this->_end;
+    return $this->end;
   } 
   public function setEnd($end){
-    $this->_end = $end;
+    $this->end = $end;
   }
   
-  public function getListEvents(){
-    return $this->_listEvents;
-  } 
-  public function setListEvents($listEvents){
-    $this->_listEvents[] = $listEvents;
-  }
-  
-  public function getAllEventsFromService()
+  public function getAllEventsOfService()
   {
     $wsdl = "http://localhost:50497/ServiceGSB.svc?wsdl";
     $service = new SoapClient($wsdl);
@@ -52,14 +45,27 @@ class Events
     
     foreach($AllEvents->CEvent as $event)
     {
-      $Event = new $this;
-      $Event->setId($event->EVENT_ID);
-      $Event->setTitle($event->EVENT_TITLE);
-      $Event->setStart($event->EVENT_START);
-      $Event->setEnd($event->EVENT_END);
+      $oEvent = new $this;
+      $oEvent->setId($event->EVENT_ID);
+      $oEvent->setTitle($event->EVENT_TITLE);
+      $oEvent->setStart($event->EVENT_START);
+      $oEvent->setEnd($event->EVENT_END);
       
-      $Event->setListEvents($Event);
+      $this->listEvents[] = $oEvent;
     }
+  }
+  
+  public function EventsToCalendar()
+  {
+    $wsdl = "http://localhost:50497/ServiceGSB.svc?wsdl";
+    $service = new SoapClient($wsdl);
+    $AllEvents = $service->GetAllEvents()->GetAllEventsResult;
+    $stringEvents = array();
+    foreach($AllEvents->CEvent as $event)
+    {
+      $stringEvents[] = ['id' => "".$event->EVENT_ID."", 'title' => "".$event->EVENT_TITLE."", 'start' => "".$event->EVENT_START."", 'end' => "".$event->EVENT_END.""];
+    }
+    return $stringEvents;
   }
 }
 ?>
