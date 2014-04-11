@@ -1,8 +1,24 @@
 <?php
-
-  include('class/event.class.php');
+  
+  //VIA LE WEBSERVICE
+  /*include('../class/event.class.php');
   $Evenements = new CEvents(); 
-  echo json_encode($Evenements->EventsToCalendar());
+  echo json_encode($Evenements->EventsToCalendar());*/
+  
+  //VIA PDO
+  session_start();
+  require_once('../fonctions/connectToDb.php');
+  $sql = "SELECT * FROM event WHERE user_id='".$_SESSION['id']."'";
+  if($_SESSION['statut_id'] == 5)
+  {
+    $sql = "SELECT * FROM event";
+  }
+  $q = $connexion->prepare($sql);
+  $q->execute();
+  $result = $q->fetchAll(PDO::FETCH_ASSOC);
+  $json = json_encode($result);
+  
+  echo $json;
   
   /*// liste des événements
   $json = array();

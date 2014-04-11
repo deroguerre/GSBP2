@@ -1,7 +1,15 @@
 <h4>Test client web service</h4>
 <?php 
-  include('event.class.php');
-  $Evenements = new CEvents();
+
+  $wsdl = "http://localhost:50497/ServiceGSB.svc?wsdl";
+  $service = new SoapClient($wsdl);
+  $AllEvents = $service->GetAllEvents()->GetAllEventsResult;
+  /*foreach($AllEvents->CEvent as $event)
+  {
+    var_dump($event);
+  }*/
+  /*include('event.class.php');
+  $Evenements = new CEvents();*/
   //$Evenements->getAllEventsOfService();
   //echo $Evenements->stringEvents;
   //$wsdl = "http://localhost:50497/ServiceGSB.svc?wsdl";
@@ -15,7 +23,7 @@
   var_dump(json_encode($AllEvents->GetAllEventsResult->CEvent));*/
   
   //var_dump($Evenements->EventsToCalendar());
-  $Evenements->getAllEventsOfService();
+  /*$Evenements->getAllEventsOfService();
   echo  '<br><br><br>';
   var_dump($Evenements->listEvents[0]);
   echo  '<br><br><br>';
@@ -39,7 +47,7 @@
 
     // envoi du résultat au success
     print_r(json_encode($resultat->fetchAll(PDO::FETCH_ASSOC)));
-  }
+  }*/
 
     /*foreach ($AllEvents->CEvent as $Event)
     {

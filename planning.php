@@ -1,6 +1,6 @@
 <?php
   session_start();
-  if(!isset($_SESSION['email'], $_SESSION['password']))
+  if(!isset($_SESSION['email']))
   {
     header("Location: index.php");
   }
@@ -15,7 +15,7 @@
 
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/custom2.css" rel="stylesheet">
+    <link href="css/custom.css" rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -38,24 +38,81 @@
       
         $('#calendar').fullCalendar({
         
-          editable: true,
-          
           aspectRatio: 2.1,
           
-          events: "json-events.php",
+          events: "fullcalendar/json-events.php",
           
+          editable: true,
+          
+          //Déplacement des evenements
           eventDrop: function(event, delta) {
-            alert(event.title + ' was moved ' + delta + ' days\n' +
-              '(should probably update your database)');
+            start = $.fullCalendar.formatDate(event.start, "yyyy-MM-dd HH:mm:ss");
+            end = $.fullCalendar.formatDate(event.end, "yyyy-MM-dd HH:mm:ss");
+            //Envoie les informations via ajax
+            $.ajax({
+              url: 'http://127.0.0.1/GSBP2/fullcalendar/update_events.php',
+              data: 'title='+ event.title+'&start='+ start +'&end='+ end +'&id='+ event.id ,
+              type: "POST",
+              success: function(json) {
+                alert("Déplacement enregistré");
+              }
+            });
           },
+          
+          //Gère le redimensionnement des évènements
+          /*eventResize: function(event) {
+            start = $.fullCalendar.formatDate(event.start, "yyyy-MM-dd HH:mm:ss");
+            end = $.fullCalendar.formatDate(event.end, "yyyy-MM-dd HH:mm:ss");
+            $.ajax({
+              url: 'http://127.0.0.1/GSBP2/fullcalendar/update_events.php',
+              data: 'title='+ event.title+'&start='+ start +'&end='+ end +'&id='+ event.id ,
+              type: "POST",
+              success: function(json) {
+                alert("OK");
+              }
+            });
+          },*/
           
           loading: function(bool) {
             if (bool) $('#loading').show();
             else $('#loading').hide();
-          }
+          },
           
+          ///////////////////////////////////////////////
+          
+          selectable: true,
+          
+          selectHelper: true,
+          
+          //Création d'évènements
+          select: function(start, end, allDay) {
+            var title = prompt('Nouvel évènement:');
+            var user_id = "<?php echo $_SESSION['id']?>";
+            if (title) {
+            start = $.fullCalendar.formatDate(start, "yyyy-MM-dd HH:mm:ss");
+            end = $.fullCalendar.formatDate(end, "yyyy-MM-dd HH:mm:ss");
+            $.ajax({
+              url: 'http://127.0.0.1/GSBP2/fullcalendar/add_events.php',
+              data: 'title='+ title+'&start='+ start +'&end='+ end +'&user_id='+ user_id ,
+              type: "POST",
+              success: function(json) {
+                location.reload();
+            }
+            });
+            calendar.fullCalendar('renderEvent',
+            {
+              title: title,
+              start: start,
+              end: end,
+              allDay: allDay
+            },
+            true // make the event "stick"
+            );
+            }
+            calendar.fullCalendar('unselect');
+          }
+          ///////////////////////////////////////////////////
         });
-        
       });
 
     </script>
@@ -63,38 +120,27 @@
   </head>
   <body>
   
-    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="index.php">GSB</a>
-        </div>
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href='dashboard.php'>Dashboard</a></li>
-            <li class='active'><a href='#'>Planning</a></li>
-            <li><a href='#'>Profil</a></li>
-            <li><a href='contact.php'>Contact</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
+    <!-- Include la barre de navigation -->
+    <?php require_once('templates/nav.html') ?>
     
     <div id="menu-gauche" class="container-fluid">
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
-            <li><a href='#'>essai01</a></li>
-            <li><a href='#'>essai02</a></li>
+            <li id='calendrier' class='active'><a href='#'>Calendrier</a></li>
+            <li id='allEvents'><a href='allEvents.php'>Événements</a></li>
           </ul>
           <ul class="nav nav-sidebar">
-            <li><a href='#'>essai03</a></li>
-            <li><a href='#'>essai04</a></li>
+          <h4 style='color: #FC7F3C; padding: 30px'><span class="glyphicon glyphicon-time"></span> En attente de confirmation</h4>
+          <?php
+            require_once('fonctions/connectToDb.php');
+            
+            $sql = "SELECT * FROM event WHERE user_id='".$_SESSION['id']."' AND confirm='0' ORDER BY start ASC";
+            foreach($connexion->query($sql) as $row)
+            {
+              echo "<div style='margin-left: 15px; margin-right: 15px' class='alert alert-danger'><b>".date("d/m/Y", strtotime($row['start']))."</b> ".$row['title']."</div>";
+            }
+          ?>
           </ul>
         </div>
       </div>
@@ -102,8 +148,35 @@
     
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
       <h1 class="page-header">Planning</h1>
-      <div id='calendar'></div>
+      <div id='main'>
+        <div id='calendar'></div>
+      </div>
     </div>
+    
+    <!-- ///////////// JAVASCRIPT ///////////// -->
+    
+    <!-- Active le visuel -->
+    <!--<script>
+      var btnMenu = document.getElementById('planning');
+      btnMenu.className='active';
+    </script>-->
+    
+    <!--<script>
+      //recharge la page du calendrier
+      $(document).ready(function() {
+        $('#calendrier').click(function() {
+          location.reload();
+        });
+        //Charge la page 'Événements'
+        $('#allEvents').click(function() {
+          $('#main').load('allEvents.php');
+          btnCalendar = document.getElementById('calendrier');
+          btnAllEvents = document.getElementById('allEvents');
+          btnCalendar.className='';
+          btnAllEvents.className='active';
+        });
+      });
+    </script>-->
     
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
