@@ -40,7 +40,7 @@
         
           aspectRatio: 2.1,
           
-          events: "fullcalendar/json-events.php",
+          events: "fonctions/eventsToCalendar.php",
           
           editable: true,
           
@@ -48,10 +48,11 @@
           eventDrop: function(event, delta) {
             start = $.fullCalendar.formatDate(event.start, "yyyy-MM-dd HH:mm:ss");
             end = $.fullCalendar.formatDate(event.end, "yyyy-MM-dd HH:mm:ss");
+            var user_id = "<?php echo $_SESSION['id']?>";
             //Envoie les informations via ajax
             $.ajax({
-              url: 'http://127.0.0.1/GSBP2/fullcalendar/update_events.php',
-              data: 'title='+ event.title+'&start='+ start +'&end='+ end +'&id='+ event.id ,
+              url: 'http://127.0.0.1/GSBP2/fonctions/updateEventFromCalendar.php',
+              data: 'title='+ event.title+'&start='+ start +'&end='+ end +'&id='+ event.id +'&user_id='+ user_id +'&confirm='+ event.confirm + '&color='+ event.color ,
               type: "POST",
               success: function(json) {
                 alert("Déplacement enregistré");
@@ -59,24 +60,6 @@
             });
           },
           
-          //Gère le redimensionnement des évènements
-          /*eventResize: function(event) {
-            start = $.fullCalendar.formatDate(event.start, "yyyy-MM-dd HH:mm:ss");
-            end = $.fullCalendar.formatDate(event.end, "yyyy-MM-dd HH:mm:ss");
-            $.ajax({
-              url: 'http://127.0.0.1/GSBP2/fullcalendar/update_events.php',
-              data: 'title='+ event.title+'&start='+ start +'&end='+ end +'&id='+ event.id ,
-              type: "POST",
-              success: function(json) {
-                alert("OK");
-              }
-            });
-          },*/
-          
-          loading: function(bool) {
-            if (bool) $('#loading').show();
-            else $('#loading').hide();
-          },
           
           ///////////////////////////////////////////////
           
@@ -92,7 +75,7 @@
             start = $.fullCalendar.formatDate(start, "yyyy-MM-dd HH:mm:ss");
             end = $.fullCalendar.formatDate(end, "yyyy-MM-dd HH:mm:ss");
             $.ajax({
-              url: 'http://127.0.0.1/GSBP2/fullcalendar/add_events.php',
+              url: 'http://127.0.0.1/GSBP2/fonctions/addEventFromCalendar.php',
               data: 'title='+ title+'&start='+ start +'&end='+ end +'&user_id='+ user_id ,
               type: "POST",
               success: function(json) {
@@ -123,6 +106,7 @@
     <!-- Include la barre de navigation -->
     <?php require_once('templates/nav.html') ?>
     
+    <!-- MENU DE GAUCHE -->
     <div id="menu-gauche" class="container-fluid">
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
@@ -146,6 +130,7 @@
       </div>
     </div>
     
+    <!-- CONTAINER -->
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
       <h1 class="page-header">Planning</h1>
       <div id='main'>

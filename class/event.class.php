@@ -1,26 +1,6 @@
 <?php
-class CEvents
+class Event
 {
-
-  public function getAllEvents()
-  {
-    require_once('fonctions/connectToDb.php');      
-    $sql = "SELECT * FROM event";
-    foreach($connexion->query($sql) as $dbevent)
-    {
-      $oEvent = new $this;
-      $oEvent->setId($dbevent['id']);
-      $oEvent->setTitle($dbevent['title']);
-      $oEvent->setStart($dbevent['start']);
-      $oEvent->setEnd($dbevent['end']);
-      $oEvent->setUser_id($dbevent['user_id']);
-      $oEvent->setConfirm($dbevent['confirm']);
-      $oEvent->setColor($dbevent['color']);
-      
-      $this->listEvents[] = $oEvent;
-    }
-  }
-
   //Attributs évènement
   private $id;
   private $title;
@@ -29,8 +9,6 @@ class CEvents
   private $user_id;
   private $confirm;
   private $color;
- 
-  public $listEvents = array();
   
   public function getId(){
     return $this->id;
@@ -81,6 +59,48 @@ class CEvents
     $this->color = $color;
   }
   
+//////////////////////////////////////////////
+  public function __construct($donnees)
+  {
+    $this->hydrate($donnees);
+  }
+
+  public function hydrate(array $donnees)
+  {
+    foreach($donnees as $key => $value)
+    {
+      //On récupère le nom du setter correspondant à l'attribut
+      $method = 'set'.ucfirst($key);
+      
+      if(method_exists($this, $method))
+      {
+        $this->$method($value);
+      }
+    }
+  }
+
+  public function getAllEvents()
+  {
+    require_once('fonctions/connectToDb.php');      
+    $sql = "SELECT * FROM event";
+    $listEvents = array();
+    foreach($connexion->query($sql) as $dbevent)
+    {
+      $oEvent = new $this;
+      $oEvent->setId($dbevent['id']);
+      $oEvent->setTitle($dbevent['title']);
+      $oEvent->setStart($dbevent['start']);
+      $oEvent->setEnd($dbevent['end']);
+      $oEvent->setUser_id($dbevent['user_id']);
+      $oEvent->setConfirm($dbevent['confirm']);
+      $oEvent->setColor($dbevent['color']);
+      
+      $listEvents[] = $oEvent;
+    }
+    
+    return $listEvents;
+  }
+  
   public function getAllEventsOfService()
   {
     $wsdl = "http://localhost:50497/ServiceGSB.svc?wsdl";
@@ -103,12 +123,21 @@ class CEvents
   public function EventsToCalendar()
   {
     $wsdl = "http://localhost:50497/ServiceGSB.svc?wsdl";
-    $service = new SoapClient($wsdl);
+    $options = array('cache_wsdl' => WSDL_CACHE_NONE);
+    $service = new SoapClient($wsdl, $options);
     $AllEvents = $service->GetAllEvents()->GetAllEventsResult;
+    
     $stringEvents = array();
+    
     foreach($AllEvents->CEvent as $event)
     {
-      $stringEvents[] = ['id' => "".$event->EVENT_ID."", 'title' => "".$event->EVENT_TITLE."", 'start' => "".$event->EVENT_START."", 'end' => "".$event->EVENT_END.""];
+      $stringEvents[] = ['id' => "".$event->EVENT_ID."",
+                      'title' => "".$event->EVENT_TITLE."",
+                      'start' => "".$event->EVENT_START."",
+                      'end' => "".$event->EVENT_END."",
+                      'user_id' => "".$oEvent->EVENT_USER_ID."",
+                      'confirm' => "".$oEvent->EVENT_CONFIRM."",//PROVOQUE UN BUG PARCEQUE LE WESERVICE NE SACTUALISE PAS
+                      'color' => "".$oEvent->EVENT_COLOR.""];
     }
     return $stringEvents;
   }

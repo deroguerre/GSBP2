@@ -2,7 +2,7 @@
   session_start();
   require_once('../fonctions/connectToDb.php');
   
-  /*$sql = "SELECT statut_id FROM user WHERE id='".$_POST['id']."'";
+  /*$sql = "SELECT statut_id FROM user WHERE id=(SELECT user_id FROM event WHERE id='".$_POST['id']."')";
   $connexion->query($sql)
   $result = $connexion->fetch(PDO::FETCH_OBJ);
   
@@ -30,8 +30,10 @@
       $color = '#046380';
   }*/
   
-  $sql = "UPDATE event SET confirm='1' WHERE id='".$_POST['id']."'";
+  
+  $sql = "UPDATE event SET confirm='1', color='#5F8CA3' WHERE id='".$_POST['id']."'";
   $q = $connexion->prepare($sql);
   $q->execute();
   header('Location: ../allEvents.php');
+  
 ?>
